@@ -1,16 +1,20 @@
 const router = require('express').Router();
 
-const {controller} = require('../controller');
-const {middleware} = require('../middleware');
+const { authController, clinicController, doctorController, specialityController } = require('../controllers');
+const { adminMiddleware } = require('../middlewares');
 
-router.get('/', controller.getAll);
+router.route('/clinics')
+    .post(adminMiddleware.checkIsClinicExist, adminController.addNewClinic)
+    .put()
+    .get(clinicController.getAllClinics)
 
-router.get('/:id', controller.getSingle);
-
-router.use('/:id', middleware.isPresent)
-
-router.delete('/:id', controller.delete);
-
-router.post('/', controller.create);
+router.route('/doctors')
+    .post(doctorController.addNewDoctor)
+    .put()
+    .get(doctorController.getAllDoctors)
+router.route('/services')
+    .post()
+    .put()
+    .get()
 
 module.exports = router;

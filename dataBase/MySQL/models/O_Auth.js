@@ -5,7 +5,8 @@ module.exports = (client) => {
         'O_Auth',
         {
             id: {
-                type: DataTypes.STRING
+                type: DataTypes.STRING,
+                primaryKey: true
             },
             access_token: {
                 type: DataTypes.STRING

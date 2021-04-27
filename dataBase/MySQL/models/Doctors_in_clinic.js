@@ -4,14 +4,10 @@ module.exports = (client) => {
         'doctor-in-clinic',
         {
             doctor_id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true
+                type: DataTypes.INTEGER
             },
             clinic_id: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                primaryKey: true
+                type: DataTypes.INTEGER
             }
         },
         {

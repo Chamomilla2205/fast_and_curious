@@ -12,7 +12,8 @@ module.exports = {
             'services',
             {
                 id: {
-                    type: DataTypes.STRING
+                    type: DataTypes.STRING,
+                    primaryKey: true
                 },
                 speciality: {
                     type: DataTypes.STRING
