@@ -1,5 +1,5 @@
 const {errorCodes} = require('../constants')
-const {clinicServices} = require('../services')
+const {clinicServices, doctorServices, specialityServices} = require('../services')
 
 module.exports = {
     checkIsClinicExist: async (req,res,next) => {
@@ -17,13 +17,28 @@ module.exports = {
             res.status(errorCodes.BAD_REQUEST).json(error.message)
         }
     },
-    checkIsClinicExist: async (req,res,next) => {
+    checkIsDoctorExist: async (req,res,next) => {
         try {
             const {name} = req.body;
 
-            const clinic = await clinicServices.getOneClinic({name});
+            const doctor = await doctorServices.getOneDoctor({name});
 
-            if (clinic) {
+            if (doctor) {
+                throw new Error('Clinic with this name is already exist')
+            }
+
+            next()
+        } catch (error) {
+            res.status(errorCodes.BAD_REQUEST).json(error.message)
+        }
+    },
+    checkIsSpecialityExist: async (req,res,next) => {
+        try {
+            const {name} = req.body;
+
+            const speciality = await specialityServices.getOneSpeciality({name});
+
+            if (speciality) {
                 throw new Error('Clinic with this name is already exist')
             }
 

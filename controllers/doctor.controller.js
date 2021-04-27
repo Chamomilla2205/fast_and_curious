@@ -11,12 +11,29 @@ module.exports = {
             await doctorServices.addDoctor({ name }, transaction)
             await transaction.commit();
 
-            res.json('Clinic created')
+            res.json('Doctor created')
         } catch (error) {
             await transaction.rollback();
             res.status(errorCodes.BAD_REQUEST).json(error.message)
         }
     },
+
+    updateDoctor: async (req,res) => {
+        const transaction = await transactionInst();
+        try {
+            const {boy: {name}, params: {id}} = req;
+
+            await doctorServices.updateDoctor(id, {name}, transaction);
+
+            await transaction.commit();
+
+            res.json('Doctor info changed')
+        } catch (error) {
+            await transaction.rollback();
+            res.status(errorCodes.BAD_REQUEST).json(error.message)
+        }
+    },
+
     getAllDoctors: async (req,res) => {
         try{
             const {} = req.body;

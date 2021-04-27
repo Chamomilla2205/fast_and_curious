@@ -6,6 +6,11 @@ module.exports = {
         return Doctor.create(doctorObj, {transaction})
     },
 
+    updateDoctor: async (id,doctorObj, transaction) => {
+        const Doctor =db.getModel('Doctor');
+        return Doctor.create(doctorObj, {where: {id}} ,{transaction})
+    },
+
     getDoctors: async () => {
         const Doctor =db.getModel('Doctor');
         return Doctor.findAll()
@@ -15,6 +20,5 @@ module.exports = {
         const Doctor =db.getModel('Doctor');
 
         return Doctor.findOne({where: doctorObj})
-    },
-
+    }
 }

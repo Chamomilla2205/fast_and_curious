@@ -17,6 +17,23 @@ module.exports = {
             res.status(errorCodes.BAD_REQUEST).json(error.message)
         }
     },
+
+    updateClinic: async (req,res) => {
+        const transaction = await transactionInst();
+        try {
+            const {boy: {name}, params: {id}} = req;
+
+            await clinicServices(id, {name}, transaction);
+
+            await transaction.commit();
+
+            res.json('Clinic info changed')
+        } catch (error) {
+            await transaction.rollback();
+            res.status(errorCodes.BAD_REQUEST).json(error.message)
+        }
+    },
+
     getAllClinics: async (req,res) => {
         try{
             const {} = req.body;

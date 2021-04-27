@@ -4,17 +4,16 @@ const { authController, clinicController, doctorController, specialityController
 const { adminMiddleware } = require('../middlewares');
 
 router.route('/clinics')
-    .post(adminMiddleware.checkIsClinicExist, adminController.addNewClinic)
-    .put()
+    .post(adminMiddleware.checkIsClinicExist, clinicController.addNewClinic)
+    .put(clinicController.updateClinic)
     .get(clinicController.getAllClinics)
 
 router.route('/doctors')
-    .post(doctorController.addNewDoctor)
-    .put()
+    .post(adminMiddleware.checkIsDoctorExist, doctorController.addNewDoctor)
+    .put(doctorController.updateDoctor)
     .get(doctorController.getAllDoctors)
 router.route('/services')
-    .post()
-    .put()
-    .get()
+    .post(adminMiddleware.checkIsSpecialityExist, specialityController.addNewSpeciality)
+    .get(specialityController.getAllSpecialities)
 
 module.exports = router;
