@@ -1,12 +1,12 @@
-const {errorCodes} = require('../constants');
-const {clinicServices, doctorServices, specialityServices} = require('../services');
-const {transactionInst} = require('../dataBase/MySQL').getInit();
+const { errorCodes } = require('../constants');
+const { clinicServices, doctorServices, specialityServices } = require('../services');
+const { transactionInst } = require('../dataBase/MySQL').getInit();
 
 module.exports = {
-    addNewDoctor: async (req,res) => {
+    addNewDoctor: async (req, res) => {
         const transaction = await transactionInst();
-        try{
-            const {name} = req.body;
+        try {
+            const { name } = req.body;
 
             await doctorServices.addDoctor({ name }, transaction)
             await transaction.commit();
@@ -18,12 +18,12 @@ module.exports = {
         }
     },
 
-    updateDoctor: async (req,res) => {
+    updateDoctor: async (req, res) => {
         const transaction = await transactionInst();
         try {
-            const {boy: {name}, params: {id}} = req;
+            const { boy: { name }, params: { id } } = req;
 
-            await doctorServices.updateDoctor(id, {name}, transaction);
+            await doctorServices.updateDoctor(id, { name }, transaction);
 
             await transaction.commit();
 
@@ -34,23 +34,66 @@ module.exports = {
         }
     },
 
-    getAllDoctors: async (req,res) => {
-        try{
+    getAllDoctors: async (req, res) => {
+        try {
             const {} = req.body;
 
-            await doctorServices.getDoctors()
+            const doctors = await doctorServices.getDoctors();
+
+            res.json(doctors)
         } catch (error) {
             res.status(errorCodes.BAD_REQUEST).json(error.message)
         }
     },
 
-    getSingleDoctor: async (req,res) => {
+    getSingleDoctor: async (req, res) => {
         try {
-            const {id} = req.params;
+            const { params: { id } } = req;
 
-            await doctorServices.getOneDoctor({id})
+            const doctor = await doctorServices.getOneDoctor({ id: +id });
+
+            const allClinicsByDoctor = await doctorServices.getDoctorsClinic({ doctor_id: +id });
+            const doctorsClinics = [];
+            await allClinicsByDoctor.map(async ({ dataValues }) => {
+                const clinic = await clinicServices.getOneClinic({ id: dataValues.clinic_id })
+                return doctorsClinics.push(clinic)
+            });
+
+            const allSpecialitiesByDoctor = await specialityServices.getDoctorsClinic({doctor_id: +id});
+            const doctorsSpecialities = [];
+            await allSpecialitiesByDoctor.map(async ({ dataValues }) => {
+                const clinic = await specialityServices.getOneSpeciality({ id: dataValues.service_id });
+
+                return doctorsSpecialities.push(clinic)
+            });
+
+            const allSpecialities = await specialityServices.getSpecialities();
+
+            const whichServiceExist = await allSpecialities.map(({ dataValues }) => dataValues)
+
+            const doctorInfo = { doctor, whichServiceExist, doctorsClinics, doctorsSpecialities };
+            res.json(doctorInfo)
         } catch (error) {
+            res.status(errorCodes.BAD_REQUEST).json(error.message)
+        }
+    },
+
+    addSpecialityToDoctor: async (req, res) => {
+        const transaction = await transactionInst();
+        try {
+            const { params: { id }, body: { speciality } } = req;
+
+            const { dataValues } = await specialityServices.getOneSpeciality({ speciality });
+
+            await doctorServices.addSpecialityToDoc({ doctor_id: +id, service_id: +dataValues.id }, transaction)
+
+            await transaction.commit();
+
+            res.json('Specialization is added')
+        } catch (error) {
+            await transaction.rollback();
             res.status(errorCodes.BAD_REQUEST).json(error.message)
         }
     }
 }
+

@@ -1,7 +1,7 @@
 const DataTypes = require('sequelize');
 module.exports = (client) => {
     const DoctorInClinic = client.define(
-        'doctor-in-clinic',
+        'doctors_in_clinic',
         {
             doctor_id: {
                 type: DataTypes.INTEGER
@@ -11,7 +11,7 @@ module.exports = (client) => {
             }
         },
         {
-            tableName: 'doctors',
+            tableName: 'Doctors_in_clinic',
             timestamps: false
         }
     );

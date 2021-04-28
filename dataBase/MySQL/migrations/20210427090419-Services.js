@@ -12,17 +12,12 @@ module.exports = {
             'services',
             {
                 id: {
-                    type: DataTypes.STRING,
+                    type: DataTypes.INTEGER,
+                    autoIncrement: true,
                     primaryKey: true
                 },
                 speciality: {
                     type: DataTypes.STRING
-                },
-                doctor_id: {
-                    type: DataTypes.INTEGER
-                },
-                clinic_id: {
-                    type: DataTypes.INTEGER
                 }
             }
         )

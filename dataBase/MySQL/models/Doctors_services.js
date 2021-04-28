@@ -1,8 +1,13 @@
 const DataTypes = require('sequelize');
 module.exports = (client) => {
     const DoctorServices = client.define(
-        'doctors-services',
+        'doctors_services',
         {
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
             doctor_id: {
                 type: DataTypes.INTEGER
             },
@@ -11,7 +16,7 @@ module.exports = (client) => {
             }
         },
         {
-            tableName: 'doctors-services',
+            tableName: 'doctors_services',
             timestamps: false
         }
     );

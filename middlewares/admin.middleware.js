@@ -34,14 +34,12 @@ module.exports = {
     },
     checkIsSpecialityExist: async (req,res,next) => {
         try {
-            const {name} = req.body;
+            const {speciality} = req.body;
 
-            const speciality = await specialityServices.getOneSpeciality({name});
-
-            if (speciality) {
+            const service = await specialityServices.getOneSpeciality({speciality});
+            if (service) {
                 throw new Error('Clinic with this name is already exist')
             }
-
             next()
         } catch (error) {
             res.status(errorCodes.BAD_REQUEST).json(error.message)

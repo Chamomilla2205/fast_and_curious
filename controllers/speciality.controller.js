@@ -6,9 +6,8 @@ module.exports = {
     addNewSpeciality: async (req,res) => {
         const transaction = await transactionInst();
         try{
-            const {name} = req.body;
-
-            await specialityServices.addSpeciality({ name }, transaction)
+            const {speciality} = req.body;
+            await specialityServices.addSpeciality({ speciality }, transaction)
             await transaction.commit();
 
             res.json('Speciality created')
@@ -21,7 +20,9 @@ module.exports = {
         try{
             const {} = req.body;
 
-            await specialityServices.getSpecialities()
+            const services = await specialityServices.getSpecialities();
+
+            res.json(services)
         } catch (error) {
             res.status(errorCodes.BAD_REQUEST).json(error.message)
         }
