@@ -14,9 +14,7 @@ module.exports = {
 
     getOneSpeciality: async (serviceObj) => {
         const Services = db.getModel('Services');
-        console.log('________________')
-        console.log(serviceObj)
-        console.log('_______________-')
+
         return Services.findOne({where: serviceObj});
     },
 
@@ -24,5 +22,14 @@ module.exports = {
         const Doctors_services = db.getModel('Doctors_services');
 
         return Doctors_services.findAll({where: doctor_id});
+    },
+    getDoctorFromClinic: async (doctor_id) => {
+        const Doctors_services = db.getModel('Doctors_services');
+
+        const xx = await Doctors_services.findAll({where: doctor_id});
+        console.log('*****************')
+        console.log(xx)
+        console.log('*****************')
+        return xx
     }
 }

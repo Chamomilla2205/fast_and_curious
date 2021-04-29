@@ -39,7 +39,7 @@ module.exports = {
         try {
             const { body: { name }, params: { id } } = req;
 
-            const doctor = await doctorServices.getOneDoctor({name})
+            const doctor = await doctorServices.getOneDoctor({ name })
 
             await clinicServices.addDoctorForClinic({ doctor_id: doctor.id, clinic_id: +id }, transaction);
 
@@ -69,12 +69,14 @@ module.exports = {
 
             const clinic = await clinicServices.getOneClinic({ id: +id }); // info about chosen clinic
 
-            const allDoctorsByClinic = await doctorServices.getDoctorsClinic({clinic_id: +id});
+
+
+            const allDoctorsByClinic = await doctorServices.getDoctorsClinic({ clinic_id: +id });
 
             const clinicsDoctors = [];
 
-            await allDoctorsByClinic.map(async ({dataValues: { doctor_id }}) => {
-                const [doctor] = await doctorServices.getDoctors({id: doctor_id}); // done
+            await allDoctorsByClinic.map(async ({ dataValues: { doctor_id } }) => {
+                const [doctor] = await doctorServices.getDoctors({ id: doctor_id }); // done
 
                 return clinicsDoctors.push(doctor)
             })
@@ -82,34 +84,48 @@ module.exports = {
             const allDoctors = await doctorServices.getDoctors(); // all doctors
 
 
-            // const whichSpecialitiesProvides = [];
 
-            const whichSpecialitiesProvides = await clinicsDoctors.map( async ({dataValues}) => {
-                const serviceId = await specialityServices.getDoctorsClinic({doctor_id: dataValues.id});
-                console.log(serviceId)
-                return serviceId; // done
-                // console.log(specialityId)
-                // const xx = specialityId.map((file) => {
-                //     const {dataValues: {speciality}} = specialityServices.getOneSpeciality({ id: dataValues.service_id });
-                //
-                //     if (specialitiesThatProvided.includes(speciality)) {
-                //         return
-                //     }
-                //     return specialitiesThatProvided.push(speciality)
-                //     console.log(specialitiesThatProvided)
-                // });
-            })
-            //
-            // const specialityProvided = await spec.map( async (file) => {
-            //     const {dataValues} = await specialityServices.getOneSpeciality({id: file});
-            //     console.log(dataValues)
-            //     return dataValues;
+            async function processArray(clinicsDoctors) {
+                const whichSpecialitiesProvides = [];
+                for (const doctor of clinicsDoctors) {
+                    const serviceId = await specialityServices.getDoctorsClinic({ doctor_id: doctor.dataValues.id });
+
+                    await whichSpecialitiesProvides.push(serviceId)
+
+                    // for (const {dataValues: service_id} of serviceId) {
+                    //     const { dataValues } = await specialityServices.getOneSpeciality({ id: service_id });
+                    //     await whichSpecialitiesProvides.push(dataValues)
+                    // }
+                }
+                // console.log(whichSpecialitiesProvides.flat(4))
+                return whichSpecialitiesProvides;
+            }
+            
+            // await clinicsDoctors.map(async ({ dataValues: { id } }) => {
+            //     const serviceId = await specialityServices.getDoctorsClinic({ doctor_id: id });
+            //     console.log(serviceId)
+            //     return  whichSpecialitiesProvides.push(serviceId)
+            //     await serviceId.map(async ({ dataValues: { service_id } }) => {
+            //         const { dataValues } = await specialityServices.getOneSpeciality({ id: service_id })
+            //         return whichSpecialitiesProvides.push(dataValues);
+            //     })
             // })
 
-            // console.log(spec)
-            const whichDoctorsExist = await allDoctors.map(({dataValues}) => dataValues); // all specialities
-            console.log(whichSpecialitiesProvides);
-            const clinicInfo = {clinic, whichDoctorsExist, clinicsDoctors}; // info to front
+            const whichSpecialities= await processArray(clinicsDoctors);
+            const whichSpecialitiesProvides = await whichSpecialities.flat(7)
+
+            const whichDoctorsExist = await allDoctors.map(({ dataValues }) => dataValues); // all specialities
+
+
+            console.log(whichSpecialitiesProvides)
+
+            console.log('HELLO')
+            const clinicInfo = {
+                clinic,
+                whichDoctorsExist,
+                clinicsDoctors,
+                // whichSpecialitiesProvides
+            }; // info to front
             res.json(clinicInfo)
         } catch (error) {
             res.status(errorCodes.BAD_REQUEST).json(error.message)
