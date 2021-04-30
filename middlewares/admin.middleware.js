@@ -1,12 +1,12 @@
 const {errorCodes} = require('../constants')
-const {clinicServices, doctorServices, specialityServices} = require('../services')
+const {clinicServices, doctorServices, specialityServices, adminServices} = require('../services')
 
 module.exports = {
     checkIsClinicExist: async (req,res,next) => {
         try {
             const {name} = req.body;
 
-            const clinic = await clinicServices.getOneClinic({name});
+            const [clinic] = await clinicServices.getAllClinics({name});
 
             if (clinic) {
                 throw new Error('Clinic with this name is already exist')

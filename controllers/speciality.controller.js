@@ -26,14 +26,5 @@ module.exports = {
         } catch (error) {
             res.status(errorCodes.BAD_REQUEST).json(error.message)
         }
-    },
-    getSingleSpecialities: async (req,res) => {
-        try{
-            const {id} = req.params;
-
-            await specialityServices.getOneSpeciality({id})
-        } catch (error) {
-            res.status(errorCodes.BAD_REQUEST).json(error.message)
-        }
     }
 }

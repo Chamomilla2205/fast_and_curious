@@ -1,6 +1,7 @@
 const { errorCodes } = require('../constants');
 const { clinicServices, doctorServices, specialityServices } = require('../services');
 const { transactionInst } = require('../dataBase/MySQL').getInit();
+const {utils} = require('../helpers')
 
 module.exports = {
     addNewDoctor: async (req, res) => {
@@ -36,11 +37,14 @@ module.exports = {
 
     getAllDoctors: async (req, res) => {
         try {
-            const {} = req.body;
-
             const doctors = await doctorServices.getDoctors();
 
-            res.json(doctors)
+            const serviceId = await utils.takeServiceIds(doctors);
+            const normalServiceIds = serviceId.flat(7);
+
+            const whichSpecialitiesProvided = await utils.getSpecialities(normalServiceIds);
+
+            res.json(whichSpecialitiesProvided)
         } catch (error) {
             res.status(errorCodes.BAD_REQUEST).json(error.message)
         }
@@ -59,7 +63,7 @@ module.exports = {
                 return doctorsClinics.push(clinic)
             });
 
-            const allSpecialitiesByDoctor = await specialityServices.getDoctorsClinic({doctor_id: +id});
+            const allSpecialitiesByDoctor = await specialityServices.getDoctorsSpecialities({doctor_id: +id});
             const doctorsSpecialities = [];
             await allSpecialitiesByDoctor.map(async ({ dataValues }) => {
                 const clinic = await specialityServices.getOneSpeciality({ id: dataValues.service_id });
@@ -83,7 +87,7 @@ module.exports = {
         try {
             const { params: { id }, body: { speciality } } = req;
 
-            const { dataValues } = await specialityServices.getOneSpeciality({ speciality });
+            const {dataValues} = await specialityServices.getOneSpeciality({ speciality });
 
             await doctorServices.addSpecialityToDoc({ doctor_id: +id, service_id: +dataValues.id }, transaction)
 

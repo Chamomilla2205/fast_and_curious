@@ -18,7 +18,7 @@ module.exports = {
         return Services.findOne({where: serviceObj});
     },
 
-    getDoctorsClinic: async (doctor_id) => {
+    getDoctorsSpecialities: async (doctor_id) => {
         const Doctors_services = db.getModel('Doctors_services');
 
         return Doctors_services.findAll({where: doctor_id});

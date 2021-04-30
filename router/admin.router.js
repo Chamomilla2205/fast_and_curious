@@ -1,35 +1,63 @@
 const router = require('express').Router();
 
-const { authController, clinicController, doctorController, specialityController } = require('../controllers');
-const { adminMiddleware } = require('../middlewares');
+const {clinicController, doctorController, specialityController } = require('../controllers');
+const { adminMiddleware, authMiddleware } = require('../middlewares');
 
 router.route('/clinics')
-    .post(adminMiddleware.checkIsClinicExist, clinicController.addNewClinic)
-    .put(clinicController.updateClinic)
-    .get(clinicController.getAllClinics)
+    .post(
+        authMiddleware.checkAccessToken,
+        adminMiddleware.checkIsClinicExist,
+        clinicController.addNewClinic
+    )
+    .get(
+        authMiddleware.checkAccessToken,
+        clinicController.getAllClinics
+    )
 
 router.route('/clinics/:id')
-    .get(clinicController.getSingleClinic)
-    .post(clinicController.addDoctorToClinic)
-    .put()
+    .get(
+        authMiddleware.checkAccessToken,
+        clinicController.getSingleClinic
+    )
+    .post(
+        authMiddleware.checkAccessToken,
+        clinicController.addDoctorToClinic
+    )
 
 router.route('/doctors')
     .post(
+        authMiddleware.checkAccessToken,
         adminMiddleware.checkIsDoctorExist,
         doctorController.addNewDoctor
     )
-    .get(doctorController.getAllDoctors)
+    .get(
+        authMiddleware.checkAccessToken,
+        doctorController.getAllDoctors
+    )
 
 router.route('/doctors/:id')
-    .get(doctorController.getSingleDoctor)
-    .post(doctorController.addSpecialityToDoctor)
-    .put(doctorController.updateDoctor)
+    .get(
+        authMiddleware.checkAccessToken,
+        doctorController.getSingleDoctor
+    )
+    .post(
+        authMiddleware.checkAccessToken,
+        doctorController.addSpecialityToDoctor
+    )
+    .put(
+        authMiddleware.checkAccessToken,
+        doctorController.updateDoctor
+    )
 
 router.route('/services')
     .post(
+        authMiddleware.checkAccessToken,
         adminMiddleware.checkIsSpecialityExist,
         specialityController.addNewSpeciality
     )
-    .get(specialityController.getAllSpecialities)
+    .get(
+        authMiddleware.checkAccessToken,
+        specialityController.getAllSpecialities
+    )
 
 module.exports = router;

@@ -1,12 +1,10 @@
 const router = require('express').Router();
 
-const {controller} = require('../controller');
-const {middleware} = require('../middleware');
+const {authController} = require('../controllers');
+const {adminMiddleware, authMiddleware} = require('../middlewares');
 
-router.post('/', adminController);
+router.post('/', authMiddleware.checkUser, authController.enterToAccount );
 
-router.get('/', controller.getAll);
-
-router.get('/:id', controller.getSingle);
+router.post('/refreshToken', authMiddleware.checkRefreshToken, authController.takeRefresh);
 
 module.exports = router;

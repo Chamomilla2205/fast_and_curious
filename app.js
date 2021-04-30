@@ -1,5 +1,5 @@
 const express = require('express');
-const path = require('path');
+require('dotenv').config();
 const apiRouter = require('./router/api.router');
 const db = require('./dataBase/MySQL').getInit();
 

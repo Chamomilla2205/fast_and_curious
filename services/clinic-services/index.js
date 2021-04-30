@@ -24,8 +24,8 @@ module.exports = {
 
     getOneClinic: async (obj) => {
         const Clinic =db.getModel('Clinic');
-        const {dataValues} = await Clinic.findOne({where: obj});
+        const { dataValues } = await Clinic.findOne({where: obj});
         return dataValues;
-    },
+    }
 
 }
