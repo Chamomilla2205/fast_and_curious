@@ -42,7 +42,7 @@ module.exports = {
             const serviceId = await utils.takeServiceIds(doctors);
             const normalServiceIds = serviceId.flat(7);
 
-            const whichSpecialitiesProvided = await utils.getSpecialities(normalServiceIds);
+            const whichSpecialitiesProvided = await utils.getSpecialitiesForDoctor(normalServiceIds);
 
             res.json(whichSpecialitiesProvided)
         } catch (error) {

@@ -10,25 +10,27 @@ const takeServiceIds = async (doctorArr) => {
     return whichSpecialitiesProvides;
 }
 
-const getSpecialities = async (normalServiceIds) => {
+const getSpecialitiesForDoctor = async (normalServiceIds) => {
     const serviceArr = [];
-    for (const service of normalServiceIds) {
-        const { dataValues: {speciality} } = await specialityServices.getOneSpeciality({ id: service.dataValues.service_id });
-        const doctor = await doctorServices.getOneDoctor({id: service.dataValues.doctor_id});
-        const allInfo = {...doctor.dataValues, speciality};
+    for (const { dataValues: {service_id, doctor_id} } of normalServiceIds) {
 
-        if (serviceArr.includes(allInfo)) {
-            return
-        }
-        await serviceArr.push(allInfo)
+        const { dataValues: {speciality} } = await specialityServices.getOneSpeciality({ id: service_id });
+        const {dataValues} = await doctorServices.getOneDoctor({id: doctor_id});
+
+        // const allInfo = {...doctor.dataValues, speciality};
+
+        // if (!serviceArr.includes({ speciality })) {
+        //     return
+        // }
+        await serviceArr.push(speciality)
     }
     return serviceArr;
 };
 
 const takeDoctorIds = async (clinicArrID) => {
     const clinicsDoctors = [];
-    for (const clinic of clinicArrID) {
-        const clinicAndDoctorId = await doctorServices.getDoctorsClinic({ id: clinic.dataValues.id });
+    for (const {dataValues} of clinicArrID) {
+        const clinicAndDoctorId = await doctorServices.getDoctorsClinic({ id: dataValues.clinic_id });
 
         await clinicsDoctors.push(clinicAndDoctorId)
     }
@@ -36,10 +38,24 @@ const takeDoctorIds = async (clinicArrID) => {
     return clinicsDoctors;
 };
 
+const getSpecialitiesForClinic = async (normalServiceIds, id) => {
+    const doctor = await doctorServices.getOneDoctor({id});
+    console.log(doctor)
+    const serviceArr = [];
+    for (const { dataValues: {service_id} } of normalServiceIds) {
+
+        const { dataValues: {speciality} } = await specialityServices.getOneSpeciality({ id: service_id });
+
+        await serviceArr.push(speciality);
+    }
+    return serviceArr;
+};
+
 
 
 module.exports = {
     takeServiceIds,
-    getSpecialities,
-    takeDoctorIds
+    getSpecialitiesForDoctor,
+    takeDoctorIds,
+    getSpecialitiesForClinic
 }

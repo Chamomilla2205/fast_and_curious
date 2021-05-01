@@ -56,32 +56,17 @@ module.exports = {
         try {
             const allClinics = await clinicServices.getAllClinics();
             let array = [];
-            for (const singleClinic of allClinics) {
-                let clinic = await clinicServices.getOneClinic({ id: singleClinic.dataValues.id }); // info about chosen clinic
+            for (const {dataValues} of allClinics) {
+                const allDoctorsByClinic = await doctorServices.getDoctorsClinic({ clinic_id: dataValues.id }); // all doctors in clinic
 
-                const allDoctorsByClinic = await doctorServices.getDoctorsClinic({ clinic_id: singleClinic.dataValues.id }); // all doctors in clinic
-
-                const doctorId = await utils.takeDoctorIds(allDoctorsByClinic);
-                const normalDoctorIds = doctorId.flat(7);
-
-                const serviceId = await utils.takeServiceIds(normalDoctorIds);
+                const serviceId = await utils.takeServiceIds(allDoctorsByClinic);
                 const normalServiceIds = serviceId.flat(7);
 
-                const whichSpecialitiesProvided = await utils.getSpecialities(normalServiceIds);
-                const eachObj = {...whichSpecialitiesProvided};
+                const whichSpecialitiesProvided = await utils.getSpecialitiesForClinic(normalServiceIds);
 
-                for (const newObjKey in eachObj) {
-                    const newObj = {eachObj}
-                    const { speciality } = await eachObj[newObjKey];
-                    console.log(newObj);
-                    clinic = {...clinic, eachObj}
-                    // console.log(finalObj)
-                }
-                const allClinicsInfo = {
-                    clinic
-                }
-                // console.log(allClinicsInfo)
-                await array.push(allClinicsInfo)
+                dataValues.providedSpecialities = whichSpecialitiesProvided;
+
+                await array.push(dataValues)
             }
             res.json(array)
         } catch (error) {
@@ -95,25 +80,23 @@ module.exports = {
 
             const clinic = await clinicServices.getOneClinic({ id: +id }); // info about chosen clinic
 
-            const allDoctorsByClinic = await doctorServices.getDoctorsClinic({ clinic_id: +id }); // all doctors in clinic
-
-            const doctorId = await utils.takeDoctorIds(allDoctorsByClinic);
-            const normalDoctorIds = doctorId.flat(7);
-
-            const serviceId = await utils.takeServiceIds(normalDoctorIds);
-            const normalServiceIds = serviceId.flat(7);
-
-            const allDoctors = await doctorServices.getDoctors();
-
-            const whichSpecialitiesProvided = await utils.getSpecialities(normalServiceIds);
+            const allDoctors = await doctorServices.getDoctors(); // all doctors
 
             const whichDoctorsExist = await allDoctors.map(({ dataValues }) => dataValues); // all specialities
+
+            const allDoctorsByClinic = await doctorServices.getDoctorsClinic({ clinic_id: +id }); // all doctors in clinic
+
+            const serviceId = await utils.takeServiceIds(allDoctorsByClinic);
+            const normalServiceIds = serviceId.flat(7);
+
+            const whichSpecialitiesProvided = await utils.getSpecialitiesForDoctor(normalServiceIds, id);
 
             const clinicInfo = {
                 clinic,
                 whichDoctorsExist,
                 whichSpecialitiesProvided
-            }; // info to front
+            };
+
             res.json(clinicInfo)
         } catch (error) {
             res.status(errorCodes.BAD_REQUEST).json(error.message)
