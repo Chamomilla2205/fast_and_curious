@@ -3,12 +3,13 @@ const db = require('../../dataBase/MySQL').getInit();
 module.exports = {
     addDoctor: async (doctorObj, transaction) => {
         const Doctor = db.getModel('Doctor');
-        console.log(doctorObj)
-        return Doctor.create(doctorObj, {transaction})
+
+        return Doctor.create(doctorObj, {transaction});
     },
 
     updateDoctor: async (id,doctorObj, transaction) => {
         const Doctor = db.getModel('Doctor');
+
         return Doctor.update(doctorObj, {where: {id}} ,{transaction})
     },
 
@@ -20,6 +21,7 @@ module.exports = {
 
     getDoctors: async (doctorObj) => {
         const Doctor =db.getModel('Doctor');
+
         return Doctor.findAll({where: doctorObj});
     },
 

@@ -10,7 +10,7 @@ module.exports = {
             const {profile: {id}} = req;
 
             const tokens = await tokenizer();
-
+            console.log(tokens)
             await authServices.newToken(tokens, id);
 
             await transaction.commit();

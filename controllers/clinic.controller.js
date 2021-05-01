@@ -1,16 +1,17 @@
 const { errorCodes } = require('../constants');
 const { clinicServices, doctorServices, specialityServices } = require('../services');
 const { transactionInst } = require('../dataBase/MySQL').getInit();
-const {utils} = require('../helpers')
+const { utils } = require('../helpers');
+
 module.exports = {
     addNewClinic: async (req, res) => {
         const transaction = await transactionInst();
         try {
             const { name } = req.body;
 
-            await clinicServices.addClinic({ name }, transaction)
-            await transaction.commit();
+            await clinicServices.addClinic({ name }, transaction);
 
+            await transaction.commit();
             res.json('Clinic created')
         } catch (error) {
             await transaction.rollback();
@@ -26,7 +27,6 @@ module.exports = {
             // await clinicServices(id, { name }, transaction);
 
             await transaction.commit();
-
             res.json('Clinic info changed')
         } catch (error) {
             await transaction.rollback();
@@ -44,7 +44,6 @@ module.exports = {
             await clinicServices.addDoctorForClinic({ doctor_id: doctor.id, clinic_id: +id }, transaction);
 
             await transaction.commit();
-
             res.json('Doctor added to clinic')
         } catch (error) {
             await transaction.rollback();
@@ -54,23 +53,29 @@ module.exports = {
 
     getAllClinics: async (req, res) => {
         try {
-            const allClinics = await clinicServices.getAllClinics();
-            let array = [];
-            for (const {dataValues} of allClinics) {
+            const { speciality } = req.query;
+
+            const clinics = await clinicServices.getAllClinics();
+
+            let allClinics = [];
+            for (const { dataValues } of clinics) {
                 const allDoctorsByClinic = await doctorServices.getDoctorsClinic({ clinic_id: dataValues.id }); // all doctors in clinic
 
                 const serviceId = await utils.takeServiceIds(allDoctorsByClinic);
                 const normalServiceIds = serviceId.flat(7);
 
-                const whichSpecialitiesProvided = await utils.getSpecialitiesForClinic(normalServiceIds);
+                const whichSpecialitiesProvided = await utils.getSpecialities(normalServiceIds);
 
                 dataValues.providedSpecialities = whichSpecialitiesProvided;
 
-                await array.push(dataValues)
+                allClinics.push(dataValues);
             }
-            res.json(array)
+
+            const hospitals = allClinics.filter(({ providedSpecialities }) => providedSpecialities.includes(speciality));
+
+            res.json(hospitals);
         } catch (error) {
-            res.status(errorCodes.BAD_REQUEST).json(error.message)
+            res.status(errorCodes.BAD_REQUEST).json(error.message);
         }
     },
 
@@ -89,7 +94,7 @@ module.exports = {
             const serviceId = await utils.takeServiceIds(allDoctorsByClinic);
             const normalServiceIds = serviceId.flat(7);
 
-            const whichSpecialitiesProvided = await utils.getSpecialitiesForDoctor(normalServiceIds, id);
+            const whichSpecialitiesProvided = await utils.getSpecialities(normalServiceIds);
 
             const clinicInfo = {
                 clinic,
@@ -97,9 +102,9 @@ module.exports = {
                 whichSpecialitiesProvided
             };
 
-            res.json(clinicInfo)
+            res.json(clinicInfo);
         } catch (error) {
-            res.status(errorCodes.BAD_REQUEST).json(error.message)
+            res.status(errorCodes.BAD_REQUEST).json(error.message);
         }
     }
 }

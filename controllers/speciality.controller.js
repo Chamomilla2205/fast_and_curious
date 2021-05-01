@@ -18,10 +18,9 @@ module.exports = {
     },
     getAllSpecialities: async (req,res) => {
         try{
-            const {} = req.body;
-
+            console.log('START')
             const services = await specialityServices.getSpecialities();
-
+            console.log(services)
             res.json(services)
         } catch (error) {
             res.status(errorCodes.BAD_REQUEST).json(error.message)

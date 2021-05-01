@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const {clinicController, doctorController, specialityController } = require('../controllers');
+const { clinicController, doctorController, specialityController } = require('../controllers');
 const { adminMiddleware, authMiddleware } = require('../middlewares');
 
 router.route('/clinics')

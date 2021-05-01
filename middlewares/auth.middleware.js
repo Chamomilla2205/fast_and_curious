@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const {errorCodes} = require('../constants');
-const {adminServices, authServices} = require('../services')
-const {JWT_ACCESS, JWT_REFRESH} = require('../config/config')
+const {adminServices, authServices} = require('../services');
+const {JWT_ACCESS, JWT_REFRESH} = require('../config/config');
 module.exports = {
     checkUser: async (req,res,next) => {
         try {
@@ -10,15 +10,15 @@ module.exports = {
             let user = await adminServices.getOneAdmin({login});
 
             const pass = (password === user.password);
-            console.log(pass)
+
             if (!user || !pass) {
-                throw new Error('WRONG EMAIL OR PASSWORD')
+                throw new Error('WRONG EMAIL OR PASSWORD');
             }
 
             req.profile = user;
             next()
         } catch (error) {
-            res.status(errorCodes.BAD_REQUEST).json(error.message)
+            res.status(errorCodes.BAD_REQUEST).json(error.message);
         }
     },
 
@@ -27,7 +27,7 @@ module.exports = {
             const access_token = await req.get('Authorization');
 
             if (!access_token) {
-                throw new Error('TOKEN IS REQUIRED')
+                throw new Error('TOKEN IS REQUIRED');
             }
 
             jwt.verify(access_token, JWT_ACCESS, (err) => {
