@@ -15,21 +15,18 @@ module.exports = {
     getOneSpeciality: async (serviceObj) => {
         const Services = db.getModel('Services');
 
-        return Services.findOne({where: serviceObj});
+        const {dataValues} = await Services.findOne({where: serviceObj});
+        return dataValues;
     },
 
-    getDoctorsSpecialities: async (doctor_id) => {
+    getDoctorsSpecialities: async (id) => {
         const Doctors_services = db.getModel('Doctors_services');
 
-        return Doctors_services.findAll({where: doctor_id});
+        return Doctors_services.findAll({where: id});
     },
-    getDoctorFromClinic: async (doctor_id) => {
+    getDoctorsSpeciality: async (id) => {
         const Doctors_services = db.getModel('Doctors_services');
 
-        const xx = await Doctors_services.findAll({where: doctor_id});
-        console.log('*****************')
-        console.log(xx)
-        console.log('*****************')
-        return xx
+        return Doctors_services.findOne({where: id});
     }
 }

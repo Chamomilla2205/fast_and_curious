@@ -42,6 +42,7 @@ router.route('/doctors/:id')
     )
     .post(
         authMiddleware.checkAccessToken,
+        adminMiddleware.doctorSpeciality,
         doctorController.addSpecialityToDoctor
     )
     .put(

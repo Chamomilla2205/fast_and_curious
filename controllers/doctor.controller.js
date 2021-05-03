@@ -98,11 +98,9 @@ module.exports = {
     addSpecialityToDoctor: async (req, res) => {
         const transaction = await transactionInst();
         try {
-            const { params: { id }, body: { speciality } } = req;
+            const {params: {id}} = req;
 
-            const { dataValues } = await specialityServices.getOneSpeciality({ speciality });
-
-            await doctorServices.addSpecialityToDoc({ doctor_id: +id, service_id: +dataValues.id }, transaction)
+            await doctorServices.addSpecialityToDoc({ doctor_id: +id, service_id: req.profile.id }, transaction)
 
             await transaction.commit();
 

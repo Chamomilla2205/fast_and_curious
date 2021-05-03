@@ -53,7 +53,7 @@ module.exports = {
 
     getAllClinics: async (req, res) => {
         try {
-            const { speciality } = req.query;
+            const { speciality, name } = req.query;
 
             const clinics = await clinicServices.getAllClinics();
 
@@ -61,19 +61,30 @@ module.exports = {
             for (const { dataValues } of clinics) {
                 const allDoctorsByClinic = await doctorServices.getDoctorsClinic({ clinic_id: dataValues.id }); // all doctors in clinic
 
+                const doctors = (await utils.getDoctorsById(allDoctorsByClinic));
+                const normalDoctors = doctors.flat(7);
+
                 const serviceId = await utils.takeServiceIds(allDoctorsByClinic);
                 const normalServiceIds = serviceId.flat(7);
 
                 const whichSpecialitiesProvided = await utils.getSpecialities(normalServiceIds);
 
                 dataValues.providedSpecialities = whichSpecialitiesProvided;
+                dataValues.doctors = normalDoctors
 
                 allClinics.push(dataValues);
             }
+            if (speciality) {
+                const hospitals = allClinics.filter(({ providedSpecialities }) => providedSpecialities.includes(speciality));
+                return res.json(hospitals)
+            }
 
-            const hospitals = allClinics.filter(({ providedSpecialities }) => providedSpecialities.includes(speciality));
+            if (name) {
+                const doctors = allClinics.filter(({ doctors }) => doctors.includes(name));
+                return res.json(doctors);
+            }
 
-            res.json(hospitals);
+            res.json(allClinics);
         } catch (error) {
             res.status(errorCodes.BAD_REQUEST).json(error.message);
         }

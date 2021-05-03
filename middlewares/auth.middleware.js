@@ -43,7 +43,7 @@ module.exports = {
 
             next()
         } catch (error) {
-            res.status().json()
+            res.status(errorCodes.UNAUTHORIZED).json(error.message)
         }
     },
 

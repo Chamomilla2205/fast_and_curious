@@ -39,7 +39,7 @@ const getSpecialities = async (normalServiceIds) => {
 
     for (const { dataValues: {service_id} } of normalServiceIds) {
 
-        const { dataValues: {speciality} } = await specialityServices.getOneSpeciality({ id: service_id });
+        const {speciality} = await specialityServices.getOneSpeciality({ id: service_id });
 
         serviceArr.add(speciality);
     }
@@ -58,11 +58,23 @@ const getClinicsByDoctors = async (normalServiceIds) => {
     return serviceArr;
 };
 
+const getDoctorsById = async (doctorIds) => {
+    const doctorArr = [];
+
+    for (const { dataValues: {doctor_id} } of doctorIds) {
+        const {dataValues} = await doctorServices.getOneDoctor({ id: doctor_id });
+
+        await doctorArr.push(dataValues.name);
+    }
+    return doctorArr;
+};
+
 
 module.exports = {
     takeServiceIds,
     takeDoctorIds,
     takeClinicIds,
     getSpecialities,
-    getClinicsByDoctors
+    getClinicsByDoctors,
+    getDoctorsById
 }
