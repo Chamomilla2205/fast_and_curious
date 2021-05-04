@@ -60,17 +60,17 @@ module.exports = {
             let allClinics = [];
             for (const { dataValues } of clinics) {
                 const allDoctorsByClinic = await doctorServices.getDoctorsClinic({ clinic_id: dataValues.id }); // all doctors in clinic
-
-                const doctors = (await utils.getDoctorsById(allDoctorsByClinic));
-                const normalDoctors = doctors.flat(7);
-
+                console.log(allDoctorsByClinic)
+                const doctors = await utils.getDoctorsById(allDoctorsByClinic);
+                // console.log(doctors)
                 const serviceId = await utils.takeServiceIds(allDoctorsByClinic);
+                // console.log(serviceId)
                 const normalServiceIds = serviceId.flat(7);
-
+                // console.log(normalServiceIds)
                 const whichSpecialitiesProvided = await utils.getSpecialities(normalServiceIds);
 
                 dataValues.providedSpecialities = whichSpecialitiesProvided;
-                dataValues.doctors = normalDoctors
+                dataValues.doctors = doctors;
 
                 allClinics.push(dataValues);
             }

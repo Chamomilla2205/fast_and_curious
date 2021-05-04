@@ -3,8 +3,8 @@ const {specialityServices, doctorServices, clinicServices} = require('../service
 const takeServiceIds = async (doctorArr) => {
     const whichSpecialitiesProvides = [];
 
-    for (const doctor of doctorArr) {
-        const serviceId = await specialityServices.getDoctorsSpecialities({ doctor_id: doctor.dataValues.id });
+    for (const {dataValues: {doctor_id}} of doctorArr) {
+        const serviceId = await specialityServices.getDoctorsSpecialities({ doctor_id });
 
         await whichSpecialitiesProvides.push(serviceId);
     }
