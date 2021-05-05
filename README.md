@@ -24,7 +24,7 @@ http://localhost5000:5000/admin/doctors/:id(
 )
 
 http://localhost5000:5000/admin/services(
-  post speciality: Add speciality, 
+  post speciality: Add speciality, for example => "speciality": "cardiology"
   get: All specialities
 )
 
